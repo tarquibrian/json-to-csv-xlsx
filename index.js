@@ -23,29 +23,29 @@ function timestampToFormattedDate(timestamp) {
 }
 
 function transformarMonitores(objeto) {
-  const resultado = { ...objeto };
+  const result = { ...objeto };
   if (
     objeto.monitores &&
     Array.isArray(objeto.monitores) &&
     objeto.monitores.length > 0
   ) {
     objeto.monitores.forEach((monitor, indice) => {
-    if (monitor.timestamp) {
-          monitor.timestamp = timestampToFormattedDate(monitor.timestamp);
-        }
+      if (monitor.timestamp) {
+        monitor.timestamp = timestampToFormattedDate(monitor.timestamp);
+      }
       Object.keys(monitor).forEach((clave) => {
         const nuevoNombre = `${clave}_monitores`;
-        
-        resultado[nuevoNombre] = monitor[clave];
+
+        result[nuevoNombre] = monitor[clave];
       });
     });
-    delete resultado.monitores;
+    delete result.monitores;
   }
-  return resultado;
+  return result;
 }
 
-const datosTransformados = data.map(transformarMonitores);
-const ordererData = datosTransformados.sort(compareDate)
+const transformedData = data.map(transformarMonitores);
+const ordererData = transformedData.sort(compareDate)
 
 
 const fechaMasReciente = new Date(ordererData[ordererData.length - 1].timestamp_monitores);
@@ -55,7 +55,7 @@ const objetosUltimoMes = ordererData.filter(objeto => {
   return (
     fechaObjeto.getMonth() === fechaMasReciente.getMonth() &&
     fechaObjeto.getFullYear() === fechaMasReciente.getFullYear()
-  ) 
+  )
 });
 
 function createFiles(data, name) {
@@ -68,7 +68,7 @@ function createFiles(data, name) {
     fs.writeFileSync(`output/csv/${name}.csv`, dataParse, "utf-8");
     fs.writeFileSync(`output/json/${name}.json`, JSON.stringify(dataParse, null, 2), 'utf-8');
   } catch (error) {
-    console.log('ERROR', error) 
+    console.log('ERROR', error)
   }
 }
 
