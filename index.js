@@ -2,7 +2,7 @@ const fs = require("fs");
 const XLSX = require('xlsx')
 const { parse } = require("json2csv");
 
-const jsonData1 = fs.readFileSync("data.json", "utf-8");
+const jsonData1 = fs.readFileSync("datos.json", "utf-8");
 const data = JSON.parse(jsonData1);
 
 function compareDate(objA, objB) {
@@ -66,10 +66,11 @@ function createFiles(data, name) {
     XLSX.utils.book_append_sheet(workbook, dataXLSX, 'Datos')
     XLSX.writeFile(workbook, `output/xlsx/${name}.xlsx`)
     fs.writeFileSync(`output/csv/${name}.csv`, dataParse, "utf-8");
-    fs.writeFileSync(`output/json/${name}.json`, JSON.stringify(dataParse, null, 2), 'utf-8');
+    fs.writeFileSync(`output/json/${name}.json`, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
     console.log('ERROR', error)
   }
 }
 
 createFiles(ordererData, 'datos-totales')
+createFiles(objetosUltimoMes, 'datos-ultimo-mes')
