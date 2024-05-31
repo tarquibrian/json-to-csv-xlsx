@@ -47,6 +47,10 @@ function transformarMonitores(objeto) {
 const transformedData = data.map(transformarMonitores);
 const ordererData = transformedData.sort(compareDate)
 
+const meses = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+  'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+]
 
 const fechaMasReciente = new Date(ordererData[ordererData.length - 1].timestamp_monitores);
 
@@ -58,9 +62,15 @@ const objetosUltimoMes = ordererData.filter(objeto => {
   )
 });
 
+const nombreMes = meses[fechaMasReciente.getMonth()];
+const year = fechaMasReciente.getFullYear()
+
+console.log(nombreMes, year)
+
 function createFiles(data, name) {
   try {
     const dataParse = parse(data)
+
     const dataXLSX = XLSX.utils.json_to_sheet(data)
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, dataXLSX, 'Datos')
