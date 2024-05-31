@@ -54,33 +54,50 @@ const meses = [
 
 const fechaMasReciente = new Date(ordererData[ordererData.length - 1].timestamp_monitores);
 
-const objetosUltimoMes = ordererData.filter(objeto => {
-  const fechaObjeto = new Date(objeto.timestamp_monitores);
-  return (
-    fechaObjeto.getMonth() === fechaMasReciente.getMonth() &&
-    fechaObjeto.getFullYear() === fechaMasReciente.getFullYear()
-  )
-});
+// const objetosUltimoMes = ordererData.filter(objeto => {
+//   const fechaObjeto = new Date(objeto.timestamp_monitores);
+//   return (
+//     fechaObjeto.getMonth() === fechaMasReciente.getMonth() &&
+//     fechaObjeto.getFullYear() === fechaMasReciente.getFullYear()
+//   )
+// });
 
-const nombreMes = meses[fechaMasReciente.getMonth()];
-const year = fechaMasReciente.getFullYear()
+function obtenerDatosMes(data, mes) {
+  data.forEach(obj => {
+    obj.fechaMonitoreo = new Date(obj.timestamp_monitores);
+  })
 
-console.log(nombreMes, year)
+  const fechasMonitoreo = data.map(obj => obj.fechaMonitoreo);
+  const fechaMasReciente = new Date(Math.max(...fechasMonitoreo))
+
+  return data.filter(obj => {
+    const fechaMonitoreo = obj.fechaMonitoreo;
+    const diferenciaMeses = (fechaMasReciente.getFullYear() - fechaMonitoreo.getFullYear()) * 12
+      + fechaMasReciente.getMonth() - fechaMonitoreo.getMonth();
+    return diferenciaMeses === mes
+  })
+}
+
+const datosMes = obtenerDatosMes(ordererData, 0)
 
 function createFiles(data, name) {
   try {
+    const getDate = new Date(data[data.length - 1].timestamp_monitores);
+    const labelMonthDate = meses[getDate.getMonth()]
+    const labelYearDate = getDate.getFullYear()
+    console.log(labelMonthDate, labelYearDate)
     const dataParse = parse(data)
-
     const dataXLSX = XLSX.utils.json_to_sheet(data)
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, dataXLSX, 'Datos')
-    XLSX.writeFile(workbook, `output/xlsx/${name}.xlsx`)
-    fs.writeFileSync(`output/csv/${name}.csv`, dataParse, "utf-8");
-    fs.writeFileSync(`output/json/${name}.json`, JSON.stringify(data, null, 2), 'utf-8');
+    XLSX.writeFile(workbook, `output/xlsx/${name}-${labelMonthDate}-${labelYearDate}.xlsx`)
+    fs.writeFileSync(`output/csv/${name}-${labelMonthDate}-${labelYearDate}.csv`, dataParse, "utf-8");
+    // fs.writeFileSync(`output/json/${name}-${labelMonthDate}-${labelYearDate}.json`, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
     console.log('ERROR', error)
   }
 }
 
-createFiles(ordererData, 'datos-totales')
-createFiles(objetosUltimoMes, 'datos-ultimo-mes')
+// createFiles(ordererData, 'datos-totales')
+// createFiles(objetosUltimoMes, 'datos-ultimo-mes')
+createFiles(datosMes, `datos`)
