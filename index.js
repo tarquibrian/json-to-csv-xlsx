@@ -68,6 +68,18 @@ function obtenerDatosMes(data, mes) {
   })
 }
 
+function desanidarDatos(obj) {
+  let riegos = obj.riegos || [];
+  console.log(riegos)
+  riegos.forEach((riego, index) => {
+    obj[`id_riegos_${index}`] = riego.id;
+    obj[`timestamp_riegos_${index}`] = timestampToFormattedDate(riego.timestamp);
+  })
+  // delete obj.riegos;
+
+  return obj;
+}
+
 function createFiles(data, name) {
   try {
     if (data.length === 0) {
@@ -83,7 +95,7 @@ function createFiles(data, name) {
     XLSX.utils.book_append_sheet(workbook, dataXLSX, 'Datos')
     XLSX.writeFile(workbook, `output/xlsx/${name}-${labelMonthDate}-${labelYearDate}.xlsx`)
     fs.writeFileSync(`output/csv/${name}-${labelMonthDate}-${labelYearDate}.csv`, dataParse, "utf-8");
-    fs.writeFileSync(`output/json/${name}-${labelMonthDate}-${labelYearDate}.json`, JSON.stringify(data, null, 2), 'utf-8');
+    // fs.writeFileSync(`output/json/${name}-${labelMonthDate}-${labelYearDate}.json`, JSON.stringify(data, null, 2), 'utf-8');
     console.log('Output: ' + labelMonthDate + '/' + labelYearDate)
   } catch (error) {
     console.log('ERROR', error)
@@ -91,4 +103,6 @@ function createFiles(data, name) {
 }
 
 const datosMes = obtenerDatosMes(ordererData, 0)
-createFiles(datosMes, `datos`)
+let datosDesanidados = ordererData.map(desanidarDatos)
+
+createFiles(datosDesanidados, `datos-totales`)
