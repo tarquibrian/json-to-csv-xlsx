@@ -43,4 +43,10 @@ coverage/
 
 # Optional JetBrains IDE directories
 .idea/
-.DS_Store*
+.DS_Store
+DS_Store
+
+datos*.json
+output/
+/output
+output
